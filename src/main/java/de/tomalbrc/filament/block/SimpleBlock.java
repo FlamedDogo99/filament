@@ -2,7 +2,6 @@ package de.tomalbrc.filament.block;
 
 import de.tomalbrc.filament.api.behaviour.Behaviour;
 import de.tomalbrc.filament.api.behaviour.BehaviourType;
-import de.tomalbrc.filament.behaviour.AsyncTickingBlockBehaviour;
 import de.tomalbrc.filament.behaviour.BehaviourHolder;
 import de.tomalbrc.filament.behaviour.BehaviourMap;
 import de.tomalbrc.filament.data.AbstractBlockData;
@@ -93,6 +92,10 @@ public class SimpleBlock extends Block implements PolymerTexturedBlock, Behaviou
 
     public AbstractBlockData<? extends BlockProperties> data() {
         return this.blockData;
+    }
+
+    public SimpleBlock asFilamentBlock() {
+        return this;
     }
 
     @Override

@@ -3,11 +3,9 @@ package de.tomalbrc.filament.behaviour.item;
 import de.tomalbrc.filament.api.behaviour.ItemBehaviour;
 import de.tomalbrc.filament.behaviour.BehaviourHolder;
 import de.tomalbrc.filament.behaviour.Behaviours;
-import de.tomalbrc.filament.item.FilamentItem;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -96,7 +94,7 @@ public class Shears implements ItemBehaviour<Shears.Config> {
     }
 
     public static boolean is(ItemStack itemStack) {
-        return itemStack.getItem() instanceof FilamentItem filamentItem && filamentItem.has(Behaviours.SHEARS);
+        return itemStack.getItem().isFilamentItem() && itemStack.getItem().has(Behaviours.SHEARS);
     }
 
     public static class Config {

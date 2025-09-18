@@ -1,7 +1,5 @@
 package de.tomalbrc.filament.data;
 
-import com.google.gson.JsonParseException;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.tomalbrc.filament.behaviour.BehaviourConfigMap;
 import de.tomalbrc.filament.data.properties.BlockProperties;
 import de.tomalbrc.filament.data.properties.BlockStateMappedProperty;
@@ -12,7 +10,6 @@ import de.tomalbrc.filament.util.FilamentBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
-import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -67,9 +64,9 @@ public class BlockData extends AbstractBlockData<BlockProperties> {
     @Override
     public Map<BlockState, BlockStateMeta> createStandardStateMap() {
         Reference2ReferenceArrayMap<BlockState, BlockStateMeta> val = new Reference2ReferenceArrayMap<>();
-
-        if (blockResource() != null && blockResource().models() != null && this.blockModelType != null) {
-            for (Map.Entry<String, PolymerBlockModel> entry : this.blockResource().models().entrySet()) {
+        var blockResource = blockResource();
+        if (blockResource != null && blockResource.models() != null && this.blockModelType != null) {
+            for (Map.Entry<String, PolymerBlockModel> entry : blockResource.models().entrySet()) {
                 if (entry.getKey().equals("default")) {
                     var type = safeBlockModelType(this.blockModelType.getRawValue());
                     BlockState requestedState = type == null ? null : FilamentBlockResourceUtils.requestBlock(type, entry.getValue(), this.virtual());
