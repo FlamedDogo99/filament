@@ -85,6 +85,7 @@ public class Behaviours {
     public static final BehaviourType<Strippable, Strippable.Config> STRIPPABLE = registerBehaviour("strippable", Strippable.class);
     public static final BehaviourType<Tnt, Tnt.Config> TNT = registerBehaviour("tnt", Tnt.class);
     public static final BehaviourType<Trapdoor, Trapdoor.Config> TRAPDOOR = registerBehaviour("trapdoor", Trapdoor.class);
+    public static final BehaviourType<FenceGate, FenceGate.Config> FENCEGATE = registerBehaviour("fencegate", FenceGate.class);
     public static final BehaviourType<Waxable, Waxable.Config> WAXABLE = registerBehaviour("waxable", Waxable.class);
 
     // Decoration
