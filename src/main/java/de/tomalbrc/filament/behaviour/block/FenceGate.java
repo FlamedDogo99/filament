@@ -21,7 +21,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -33,10 +32,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
@@ -79,8 +75,8 @@ public class FenceGate implements BlockBehaviour<FenceGate.Config> {
       level.setBlock(pos, state, 10);
     } else {
       Direction direction = player.getDirection();
-      if (state.getValue(BlockStateProperties.FACING) == direction.getOpposite()) {
-        state = state.setValue(BlockStateProperties.FACING, direction);
+      if (state.getValue(BlockStateProperties.HORIZONTAL_FACING) == direction.getOpposite()) {
+        state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, direction);
       }
 
       state = state.setValue(BlockStateProperties.OPEN, true);
@@ -134,7 +130,7 @@ public class FenceGate implements BlockBehaviour<FenceGate.Config> {
     Direction direction = context.getHorizontalDirection();
     Direction.Axis axis = direction.getAxis();
     boolean bl2 = axis == Direction.Axis.Z && (this.isWall(level.getBlockState(blockPos.west())) || this.isWall(level.getBlockState(blockPos.east()))) || axis == Direction.Axis.X && (this.isWall(level.getBlockState(blockPos.north())) || this.isWall(level.getBlockState(blockPos.south())));
-    return this.modifyDefaultState(self).setValue(BlockStateProperties.FACING, direction).setValue(BlockStateProperties.OPEN, bl).setValue(BlockStateProperties.POWERED, bl).setValue(BlockStateProperties.IN_WALL, bl2);
+    return this.modifyDefaultState(self).setValue(BlockStateProperties.HORIZONTAL_FACING, direction).setValue(BlockStateProperties.OPEN, bl).setValue(BlockStateProperties.POWERED, bl).setValue(BlockStateProperties.IN_WALL, bl2);
   }
   private boolean isWall(BlockState state) {
     return state.is(BlockTags.WALLS);
@@ -142,14 +138,14 @@ public class FenceGate implements BlockBehaviour<FenceGate.Config> {
 
   @Override
   public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-    builder.add(BlockStateProperties.FACING, BlockStateProperties.OPEN, BlockStateProperties.POWERED, BlockStateProperties.IN_WALL);
+    builder.add(BlockStateProperties.HORIZONTAL_FACING, BlockStateProperties.OPEN, BlockStateProperties.POWERED, BlockStateProperties.IN_WALL);
   }
 
 
   @Override
   public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
     Direction.Axis axis = direction.getAxis();
-    if (state.getValue(BlockStateProperties.FACING).getClockWise().getAxis() != axis) {
+    if (state.getValue(BlockStateProperties.HORIZONTAL_FACING).getClockWise().getAxis() != axis) {
       return state;
     } else {
       boolean bl = this.isWall(neighborState) || this.isWall(level.getBlockState(pos.relative(direction.getOpposite())));
@@ -174,8 +170,11 @@ public class FenceGate implements BlockBehaviour<FenceGate.Config> {
       } catch (CommandSyntaxException e) {
         throw new JsonParseException("Invalid BlockState value: " + str);
       }
+
       BlockState requestedState = FilamentBlockResourceUtils.requestBlock(getFenceState(parsed.blockState()), blockModel, data.virtual());
-      map.put(parsed.blockState(), BlockData.BlockStateMeta.of(requestedState, blockModel));
+      BlockState finalState = requestedState == null ? Blocks.BEDROCK.defaultBlockState() : requestedState;
+
+      map.put(parsed.blockState(), BlockData.BlockStateMeta.of(finalState, blockModel));
     }
     return true;
   }
@@ -183,7 +182,7 @@ public class FenceGate implements BlockBehaviour<FenceGate.Config> {
   private BlockModelType getFenceState(BlockState state) {
     boolean open = state.getValue(BlockStateProperties.OPEN);
     boolean inwall = state.getValue(BlockStateProperties.IN_WALL);
-    Direction.Axis axis = state.getValue(BlockStateProperties.FACING).getAxis();
+    Direction.Axis axis = state.getValue(BlockStateProperties.HORIZONTAL_FACING).getAxis();
     if (open) {
       if (inwall) {
         return switch (axis) {
